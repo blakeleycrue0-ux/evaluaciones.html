@@ -4,428 +4,150 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Evaluaciones | Femenino Santa Ponsa</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@300;400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-/* ============================================================
-   SETUP — edita estas 2 líneas con tus credenciales Supabase
-   ============================================================ */
 :root {
-  --white: #f5f2ec;
-  --black: #080808;
-  --purple: #c084fc;
-  --purple-dark: #2d0a52;
-  --purple-mid: rgba(192,132,252,0.12);
-  --gray: #a0a09a;
-  --card-bg: #0f0f0f;
-  --border: rgba(245,242,236,0.09);
+  --white: #f5f2ec; --black: #080808; --purple: #c084fc;
+  --purple-dark: #2d0a52; --gray: #a0a09a;
+  --card-bg: #0f0f0f; --border: rgba(245,242,236,0.09);
+  --red: #ef4444; --yellow: #f59e0b; --green: #22c55e;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--black);color:var(--white);font-family:'Barlow',sans-serif;overflow-x:hidden;min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:9990;opacity:.35;}
+.hidden{display:none!important;}
+input,select,textarea,button{font-family:'Barlow',sans-serif;}
 
-  /* COLOR NOTAS */
-  --red:    #ef4444;
-  --yellow: #f59e0b;
-  --green:  #22c55e;
-  --red-bg:    rgba(239,68,68,0.1);
-  --yellow-bg: rgba(245,158,11,0.1);
-  --green-bg:  rgba(34,197,94,0.1);
-}
-
-*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-html { scroll-behavior: smooth; }
-body {
-  background: var(--black); color: var(--white);
-  font-family: 'Barlow', sans-serif;
-  overflow-x: hidden; min-height: 100vh;
-}
-body::before {
-  content:''; position:fixed; inset:0;
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-  pointer-events:none; z-index:9990; opacity:.35;
-}
-
-/* ---- HELPERS ---- */
-.hidden { display:none !important; }
-input, select, textarea, button { font-family:'Barlow',sans-serif; }
-
-/* ---- SCREENS ---- */
-.screen { min-height:100vh; display:flex; flex-direction:column; }
-
-/* ================================================================
-   LOGIN
-   ================================================================ */
-#loginScreen {
-  align-items:center; justify-content:center; padding:24px;
-}
-.login-box {
-  width:100%; max-width:400px;
-  background: var(--card-bg);
-  border:1px solid var(--border); border-radius:6px; overflow:hidden;
-}
-.login-header {
-  background: var(--purple-dark);
-  padding:32px 36px;
-  text-align:center;
-}
-.login-logo { height:48px; margin-bottom:16px; }
-.login-title {
-  font-family:'Bebas Neue',sans-serif;
-  font-size:28px; letter-spacing:.06em;
-}
-.login-sub { font-size:13px; color:rgba(192,132,252,.75); margin-top:4px; }
-.login-body { padding:32px 36px; }
-.field { margin-bottom:20px; }
-.field label {
-  display:block; font-family:'Barlow Condensed',sans-serif;
-  font-size:11px; font-weight:600; letter-spacing:.2em; text-transform:uppercase;
-  color:var(--gray); margin-bottom:8px;
-}
-.field input {
-  width:100%; padding:12px 0;
-  background:transparent; border:none; border-bottom:1px solid var(--border);
-  color:var(--white); font-size:15px; outline:none;
-  transition:border-color .3s;
-}
-.field input:focus { border-bottom-color:var(--purple); }
-.field input::placeholder { color:rgba(160,160,154,.4); }
-.btn-primary {
-  width:100%; padding:14px;
-  background:var(--purple); color:var(--black);
-  border:none; border-radius:2px;
-  font-weight:700; font-size:13px; letter-spacing:.1em; text-transform:uppercase;
-  cursor:pointer; transition:background .3s, transform .2s;
-}
-.btn-primary:hover { background:#d8b4fe; transform:translateY(-1px); }
-.login-error {
-  margin-top:14px; font-size:13px; color:var(--red);
-  text-align:center; min-height:20px;
-}
-
-/* ================================================================
-   SETUP BANNER (si no hay Supabase configurado)
-   ================================================================ */
-#setupBanner {
-  background:rgba(245,158,11,.1); border:1px solid rgba(245,158,11,.3);
-  border-radius:4px; padding:16px 20px; margin:20px;
-  font-size:13px; line-height:1.7; color:#fcd34d;
-}
-#setupBanner code {
-  background:rgba(0,0,0,.4); padding:2px 6px; border-radius:3px;
-  font-size:12px; color:#fff;
-}
-
-/* ================================================================
-   APP (after login)
-   ================================================================ */
-#appScreen { display:none; flex-direction:column; }
+/* LOGIN */
+#loginScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+.login-box{width:100%;max-width:400px;background:var(--card-bg);border:1px solid var(--border);border-radius:6px;overflow:hidden;}
+.login-header{background:var(--purple-dark);padding:32px 36px;text-align:center;}
+.login-logo{height:48px;margin-bottom:16px;}
+.login-title{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.06em;}
+.login-sub{font-size:13px;color:rgba(192,132,252,.75);margin-top:4px;}
+.login-body{padding:32px 36px;}
+.field{margin-bottom:20px;}
+.field label{display:block;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--gray);margin-bottom:8px;}
+.field input,.field select{width:100%;padding:12px 0;background:transparent;border:none;border-bottom:1px solid var(--border);color:var(--white);font-size:15px;outline:none;transition:border-color .3s;}
+.field input:focus,.field select:focus{border-bottom-color:var(--purple);}
+.field input::placeholder{color:rgba(160,160,154,.4);}
+.field select option{background:#111;}
+.btn-primary{width:100%;padding:14px;background:var(--purple);color:var(--black);border:none;border-radius:2px;font-weight:700;font-size:13px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:background .3s;}
+.btn-primary:hover{background:#d8b4fe;}
+.login-error{margin-top:14px;font-size:13px;color:var(--red);text-align:center;min-height:20px;}
 
 /* TOPBAR */
-.topbar {
-  position:sticky; top:0; z-index:100;
-  background:rgba(8,8,8,.96); backdrop-filter:blur(12px);
-  border-bottom:1px solid var(--border);
-  height:64px; display:flex; align-items:center;
-  padding:0 24px; gap:16px;
-}
-.topbar-logo { height:36px; }
-.topbar-team {
-  font-family:'Barlow Condensed',sans-serif;
-  font-size:13px; font-weight:600; letter-spacing:.15em; text-transform:uppercase;
-  color:var(--purple);
-}
-.topbar-spacer { flex:1; }
-.topbar-user { font-size:13px; color:var(--gray); }
-.btn-logout {
-  padding:7px 16px; border:1px solid var(--border); border-radius:2px;
-  background:transparent; color:var(--gray); font-size:12px;
-  letter-spacing:.1em; text-transform:uppercase; cursor:pointer;
-  transition:border-color .3s, color .3s;
-}
-.btn-logout:hover { border-color:var(--white); color:var(--white); }
+.topbar{position:sticky;top:0;z-index:100;background:rgba(8,8,8,.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);height:60px;display:flex;align-items:center;padding:0 20px;gap:12px;}
+.topbar-logo{height:32px;}
+.topbar-team{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--purple);}
+.topbar-spacer{flex:1;}
+.btn-logout{padding:6px 14px;border:1px solid var(--border);border-radius:2px;background:transparent;color:var(--gray);font-size:11px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.btn-logout:hover{border-color:var(--white);color:var(--white);}
 
-/* MAIN LAYOUT */
-.app-layout {
-  display:flex; flex:1;
-}
+/* LAYOUT */
+.app-layout{display:flex;min-height:calc(100vh - 60px);}
+.sidebar{width:240px;flex-shrink:0;border-right:1px solid var(--border);padding:20px 12px;overflow-y:auto;}
+.sidebar-label{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:600;letter-spacing:.25em;text-transform:uppercase;color:var(--gray);padding:0 8px;margin-bottom:8px;}
+.player-btn{width:100%;text-align:left;padding:11px 12px;background:transparent;border:none;border-radius:4px;color:var(--white);font-size:14px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:10px;transition:background .2s;margin-bottom:2px;}
+.player-btn:hover{background:rgba(192,132,252,.08);}
+.player-btn.active{background:rgba(192,132,252,.14);color:var(--purple);}
+.player-initial{width:26px;height:26px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:13px;flex-shrink:0;color:var(--gray);}
+.player-btn.active .player-initial{background:rgba(192,132,252,.2);color:var(--purple);}
+.btn-add-player{width:100%;padding:9px 12px;margin-top:10px;background:transparent;border:1px dashed var(--border);border-radius:4px;color:var(--gray);font-size:12px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:all .3s;}
+.btn-add-player:hover{border-color:var(--purple);color:var(--purple);}
 
-/* SIDEBAR */
-.sidebar {
-  width:260px; flex-shrink:0;
-  border-right:1px solid var(--border);
-  padding:24px 16px;
-  overflow-y:auto;
-}
-.sidebar-label {
-  font-family:'Barlow Condensed',sans-serif;
-  font-size:10px; font-weight:600; letter-spacing:.25em; text-transform:uppercase;
-  color:var(--gray); padding:0 8px; margin-bottom:8px;
-}
-.player-btn {
-  width:100%; text-align:left;
-  padding:12px 12px;
-  background:transparent; border:none; border-radius:4px;
-  color:var(--white); font-size:14px; font-weight:500;
-  cursor:pointer; display:flex; align-items:center; gap:10px;
-  transition:background .2s;
-  margin-bottom:2px;
-}
-.player-btn:hover { background:rgba(192,132,252,.08); }
-.player-btn.active { background:rgba(192,132,252,.14); color:var(--purple); }
-.player-btn .player-initial {
-  width:28px; height:28px; border-radius:50%;
-  background:var(--border); display:flex; align-items:center; justify-content:center;
-  font-family:'Bebas Neue',sans-serif; font-size:14px; flex-shrink:0;
-  color:var(--gray);
-}
-.player-btn.active .player-initial { background:rgba(192,132,252,.2); color:var(--purple); }
+/* MAIN */
+.main-content{flex:1;padding:28px 32px;overflow-y:auto;max-width:820px;}
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:60vh;text-align:center;gap:12px;}
+.empty-title{font-family:'Bebas Neue',sans-serif;font-size:28px;opacity:.4;}
+.empty-sub{font-size:14px;color:var(--gray);}
 
-/* ADD PLAYER BTN */
-.btn-add-player {
-  width:100%; padding:10px 12px; margin-top:12px;
-  background:transparent; border:1px dashed var(--border); border-radius:4px;
-  color:var(--gray); font-size:13px; cursor:pointer;
-  display:flex; align-items:center; gap:8px;
-  transition:border-color .3s, color .3s;
-}
-.btn-add-player:hover { border-color:var(--purple); color:var(--purple); }
+/* PLAYER PANEL */
+.player-name-big{font-family:'Bebas Neue',sans-serif;font-size:clamp(32px,5vw,52px);line-height:.92;margin-bottom:8px;}
+.player-pos-tag{display:inline-block;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--purple);background:rgba(192,132,252,.12);padding:4px 12px;border-radius:2px;margin-bottom:20px;}
 
-/* MAIN CONTENT */
-.main-content {
-  flex:1; padding:32px 36px; overflow-y:auto; max-width:860px;
-}
+/* SESSION BAR */
+.session-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:24px;padding:14px 18px;background:var(--card-bg);border:1px solid var(--border);border-radius:4px;}
+.session-bar label{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--gray);}
+.session-bar input[type="date"]{background:transparent;border:none;border-bottom:1px solid var(--border);color:var(--white);font-size:14px;padding:4px 0;outline:none;color-scheme:dark;}
+.att-group{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap;}
+.att-btn{padding:6px 14px;border-radius:2px;border:1px solid var(--border);background:transparent;color:var(--gray);font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.att-btn.present{border-color:var(--green);background:rgba(34,197,94,.12);color:var(--green);}
+.att-btn.absent{border-color:var(--red);background:rgba(239,68,68,.12);color:var(--red);}
+.att-btn.injured{border-color:var(--yellow);background:rgba(245,158,11,.12);color:var(--yellow);}
 
-/* EMPTY STATE */
-.empty-state {
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-  height:60vh; text-align:center; gap:12px;
-}
-.empty-icon { font-size:48px; opacity:.2; }
-.empty-title {
-  font-family:'Bebas Neue',sans-serif; font-size:28px; opacity:.4;
-}
-.empty-sub { font-size:14px; color:var(--gray); }
-
-/* PLAYER HEADER */
-.player-header {
-  display:flex; align-items:flex-start; justify-content:space-between;
-  margin-bottom:32px; flex-wrap:wrap; gap:16px;
-}
-.player-header-left {}
-.player-name-big {
-  font-family:'Bebas Neue',sans-serif;
-  font-size:clamp(36px,6vw,56px); line-height:.92; letter-spacing:.02em;
-}
-.player-pos-tag {
-  display:inline-block; margin-top:8px;
-  font-family:'Barlow Condensed',sans-serif;
-  font-size:11px; font-weight:600; letter-spacing:.2em; text-transform:uppercase;
-  color:var(--purple); background:var(--purple-mid);
-  padding:4px 12px; border-radius:2px;
-}
-.player-header-actions { display:flex; gap:10px; align-items:center; }
-
-/* SESSION SELECTOR */
-.session-bar {
-  display:flex; align-items:center; gap:12px; flex-wrap:wrap;
-  margin-bottom:28px; padding:16px 20px;
-  background:var(--card-bg); border:1px solid var(--border); border-radius:4px;
-}
-.session-bar label {
-  font-family:'Barlow Condensed',sans-serif;
-  font-size:11px; font-weight:600; letter-spacing:.2em; text-transform:uppercase;
-  color:var(--gray);
-}
-.session-bar input[type="date"] {
-  background:transparent; border:none; border-bottom:1px solid var(--border);
-  color:var(--white); font-size:14px; padding:4px 0; outline:none;
-  cursor:pointer; transition:border-color .3s;
-  color-scheme: dark;
-}
-.session-bar input[type="date"]:focus { border-bottom-color:var(--purple); }
-.attendance-group { display:flex; gap:8px; margin-left:auto; }
-.att-btn {
-  padding:7px 16px; border-radius:2px; border:1px solid var(--border);
-  background:transparent; color:var(--gray); font-size:12px;
-  font-weight:600; letter-spacing:.08em; text-transform:uppercase; cursor:pointer;
-  transition:all .2s;
-}
-.att-btn.present { border-color:var(--green); background:rgba(34,197,94,.12); color:var(--green); }
-.att-btn.absent  { border-color:var(--red);   background:rgba(239,68,68,.12);  color:var(--red); }
-.att-btn.injured { border-color:var(--yellow); background:rgba(245,158,11,.12); color:var(--yellow); }
-
-/* SECTION CARDS */
-.eval-section {
-  background:var(--card-bg); border:1px solid var(--border); border-radius:4px;
-  margin-bottom:16px; overflow:hidden;
-}
-.eval-section-header {
-  padding:18px 24px; background:#111;
-  display:flex; align-items:center; justify-content:space-between;
-  cursor:pointer; user-select:none;
-  border-bottom:1px solid var(--border);
-}
-.eval-section-title {
-  font-family:'Bebas Neue',sans-serif; font-size:22px; letter-spacing:.04em;
-}
-.section-avg {
-  font-family:'Bebas Neue',sans-serif; font-size:28px;
-}
-.eval-section-body { padding:20px 24px; }
-
-/* SKILL ROW */
-.skill-row {
-  display:grid; grid-template-columns:180px 1fr auto;
-  align-items:center; gap:16px;
-  padding:12px 0; border-bottom:1px solid var(--border);
-}
-.skill-row:last-child { border-bottom:none; }
-.skill-name {
-  font-size:14px; font-weight:500;
-}
-.skill-slider-wrap { display:flex; align-items:center; gap:10px; }
-.skill-slider {
-  -webkit-appearance:none; appearance:none;
-  flex:1; height:4px; border-radius:2px; outline:none; cursor:pointer;
-  background:var(--border);
-}
-.skill-slider::-webkit-slider-thumb {
-  -webkit-appearance:none; width:16px; height:16px; border-radius:50%;
-  background:var(--purple); cursor:pointer; transition:transform .2s;
-}
-.skill-slider::-webkit-slider-thumb:hover { transform:scale(1.3); }
-.skill-val {
-  font-family:'Bebas Neue',sans-serif; font-size:22px;
-  min-width:28px; text-align:center;
-}
-
-/* COLOR CODING */
-.color-red    { color:var(--red); }
-.color-yellow { color:var(--yellow); }
-.color-green  { color:var(--green); }
-.dot-red    { background:var(--red); }
-.dot-yellow { background:var(--yellow); }
-.dot-green  { background:var(--green); }
-
-/* COMMENT BOX */
-.comment-label {
-  font-family:'Barlow Condensed',sans-serif;
-  font-size:11px; font-weight:600; letter-spacing:.2em; text-transform:uppercase;
-  color:var(--gray); display:block; margin:16px 0 8px;
-}
-.comment-box {
-  width:100%; padding:12px 14px;
-  background:rgba(245,242,236,.03); border:1px solid var(--border); border-radius:4px;
-  color:var(--white); font-size:14px; font-weight:300; line-height:1.6;
-  resize:none; outline:none; height:90px; transition:border-color .3s;
-}
-.comment-box:focus { border-color:var(--purple); }
+/* EVAL */
+.eval-section{background:var(--card-bg);border:1px solid var(--border);border-radius:4px;margin-bottom:14px;overflow:hidden;}
+.eval-section-header{padding:16px 22px;background:#111;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);}
+.eval-section-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.04em;}
+.section-avg{font-family:'Bebas Neue',sans-serif;font-size:26px;}
+.eval-section-body{padding:18px 22px;}
+.skill-row{display:grid;grid-template-columns:160px 1fr 40px;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid var(--border);}
+.skill-row:last-of-type{border-bottom:none;}
+.skill-name{font-size:13px;font-weight:500;}
+.skill-slider{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:2px;outline:none;cursor:pointer;background:var(--border);}
+.skill-slider::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;background:var(--purple);cursor:pointer;}
+.skill-val{font-family:'Bebas Neue',sans-serif;font-size:20px;text-align:center;}
+.color-red{color:var(--red);} .color-yellow{color:var(--yellow);} .color-green{color:var(--green);}
+.comment-label{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--gray);display:block;margin:14px 0 7px;}
+.comment-box{width:100%;padding:10px 12px;background:rgba(245,242,236,.03);border:1px solid var(--border);border-radius:4px;color:var(--white);font-size:13px;font-weight:300;line-height:1.6;resize:none;outline:none;height:80px;transition:border-color .3s;}
+.comment-box:focus{border-color:var(--purple);}
 
 /* SAVE BAR */
-.save-bar {
-  position:sticky; bottom:0;
-  background:rgba(8,8,8,.96); backdrop-filter:blur(12px);
-  border-top:1px solid var(--border);
-  padding:14px 36px;
-  display:flex; align-items:center; justify-content:space-between;
-}
-.save-status { font-size:13px; color:var(--gray); }
-.save-status.saved { color:var(--green); }
-.btn-save {
-  padding:12px 32px; background:var(--purple); color:var(--black);
-  border:none; border-radius:2px;
-  font-weight:700; font-size:13px; letter-spacing:.1em; text-transform:uppercase;
-  cursor:pointer; transition:background .3s, transform .2s;
-}
-.btn-save:hover { background:#d8b4fe; transform:translateY(-1px); }
-.btn-save:disabled { opacity:.4; cursor:not-allowed; transform:none; }
+.save-bar{position:sticky;bottom:0;background:rgba(8,8,8,.96);backdrop-filter:blur(12px);border-top:1px solid var(--border);padding:12px 32px;display:flex;align-items:center;justify-content:space-between;}
+.save-status{font-size:12px;color:var(--gray);}
+.save-status.saved{color:var(--green);}
+.btn-save{padding:11px 28px;background:var(--purple);color:var(--black);border:none;border-radius:2px;font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:background .3s;}
+.btn-save:hover{background:#d8b4fe;}
+.btn-save:disabled{opacity:.4;cursor:not-allowed;}
 
 /* MODAL */
-.modal-overlay {
-  position:fixed; inset:0; background:rgba(0,0,0,.75);
-  backdrop-filter:blur(4px); z-index:500;
-  display:flex; align-items:center; justify-content:center; padding:24px;
-}
-.modal {
-  background:var(--card-bg); border:1px solid var(--border); border-radius:6px;
-  width:100%; max-width:420px; overflow:hidden;
-}
-.modal-header {
-  background:#111; padding:20px 28px;
-  font-family:'Bebas Neue',sans-serif; font-size:24px; letter-spacing:.04em;
-  border-bottom:1px solid var(--border);
-}
-.modal-body { padding:28px; }
-.modal-actions { display:flex; gap:10px; margin-top:24px; }
-.btn-cancel {
-  flex:1; padding:12px; border:1px solid var(--border); border-radius:2px;
-  background:transparent; color:var(--gray); font-size:13px; cursor:pointer;
-  transition:border-color .3s, color .3s;
-}
-.btn-cancel:hover { border-color:var(--white); color:var(--white); }
-.btn-confirm { flex:1; }
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);z-index:500;display:flex;align-items:center;justify-content:center;padding:24px;}
+.modal{background:var(--card-bg);border:1px solid var(--border);border-radius:6px;width:100%;max-width:400px;overflow:hidden;}
+.modal-header{background:#111;padding:18px 26px;font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.04em;border-bottom:1px solid var(--border);}
+.modal-body{padding:26px;}
+.modal-actions{display:flex;gap:10px;margin-top:20px;}
+.btn-cancel{flex:1;padding:11px;border:1px solid var(--border);border-radius:2px;background:transparent;color:var(--gray);font-size:12px;cursor:pointer;transition:all .2s;}
+.btn-cancel:hover{border-color:var(--white);color:var(--white);}
+.btn-confirm{flex:1;padding:11px;background:var(--purple);color:var(--black);border:none;border-radius:2px;font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;}
 
-/* OVERVIEW DOTS */
-.overview-grid {
-  display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:12px;
-  margin-bottom:28px;
-}
-.overview-card {
-  background:var(--card-bg); border:1px solid var(--border); border-radius:4px;
-  padding:16px; text-align:center; cursor:pointer; transition:border-color .3s;
-}
-.overview-card:hover { border-color:rgba(192,132,252,.4); }
-.overview-card-name { font-size:13px; font-weight:600; margin-bottom:8px; }
-.overview-dot {
-  width:12px; height:12px; border-radius:50%; margin:0 auto 6px;
-  background:var(--border);
-}
-.overview-avg { font-family:'Bebas Neue',sans-serif; font-size:28px; }
+/* TOAST */
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1a1a1a;border:1px solid var(--border);border-radius:4px;padding:12px 20px;font-size:13px;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;}
+.toast.show{opacity:1;}
 
 /* MOBILE */
 @media(max-width:700px){
-  .app-layout { flex-direction: column; }
-  .sidebar {
-    width: 100%; border-right: none;
-    border-bottom: 1px solid var(--border);
-    padding: 12px;
-    display: flex; flex-direction: column;
-    max-height: 220px; overflow-y: auto;
-  }
-  .sidebar-label { margin-bottom: 8px !important; }
-  .player-btn { padding: 10px 10px; font-size: 13px; }
-  .btn-add-player { margin-top: 8px; }
-  .main-content { padding: 16px; }
-  .skill-row { grid-template-columns: 1fr auto; }
-  .skill-name { grid-column: 1/-1; font-size: 13px; padding-bottom: 4px; }
-  .save-bar { padding: 12px 16px; }
-  .session-bar { flex-direction: column; align-items: flex-start; gap: 10px; }
-  .attendance-group { margin-left: 0; }
-  .player-header { flex-direction: column; }
+  .app-layout{flex-direction:column;}
+  .sidebar{width:100%;border-right:none;border-bottom:1px solid var(--border);padding:12px;max-height:190px;overflow-y:auto;}
+  .main-content{padding:16px;}
+  .skill-row{grid-template-columns:1fr 40px;}
+  .skill-name{grid-column:1/-1;padding-bottom:2px;}
+  .save-bar{padding:10px 16px;}
+  .session-bar{flex-direction:column;align-items:flex-start;}
+  .att-group{margin-left:0;}
 }
 </style>
 </head>
 <body>
 
-<!-- ===================== LOGIN ===================== -->
-<div id="loginScreen" class="screen">
-  <div id="setupBanner" class="hidden">
-    <strong>Configuracion necesaria:</strong> Edita el archivo y pon tus credenciales de Supabase en las variables
-    <code>SUPABASE_URL</code> y <code>SUPABASE_KEY</code> al inicio del script.
-    Ve a <strong>supabase.com</strong> → New project → Settings → API.
-  </div>
+<!-- LOGIN -->
+<div id="loginScreen">
   <div class="login-box">
     <div class="login-header">
-      <img src="Logoclub.png" class="login-logo" alt="Logo" onerror="this.style.display='none'">
+      <img src="Logoclub.png" class="login-logo" alt="" onerror="this.style.display='none'">
       <div class="login-title">Panel Entrenadores</div>
       <div class="login-sub">Femenino Santa Ponsa</div>
     </div>
     <div class="login-body">
       <div class="field">
         <label>Email</label>
-        <input type="email" id="loginEmail" placeholder="entrenador@club.com" autocomplete="email">
+        <input type="email" id="loginEmail" placeholder="entrenador@email.com" autocomplete="email">
       </div>
       <div class="field">
         <label>Contraseña</label>
-        <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password">
+        <input type="password" id="loginPass" placeholder="••••••••">
       </div>
       <button class="btn-primary" onclick="doLogin()">Entrar</button>
       <div class="login-error" id="loginError"></div>
@@ -433,490 +155,348 @@ input, select, textarea, button { font-family:'Barlow',sans-serif; }
   </div>
 </div>
 
-<!-- ===================== APP ===================== -->
-<div id="appScreen" class="screen">
-
-  <!-- TOPBAR -->
+<!-- APP -->
+<div id="appScreen" class="hidden">
   <div class="topbar">
-    <img src="Logoclub.png" class="topbar-logo" alt="Logo" onerror="this.style.display='none'">
+    <img src="Logoclub.png" class="topbar-logo" alt="" onerror="this.style.display='none'">
     <span class="topbar-team" id="topbarTeam"></span>
     <div class="topbar-spacer"></div>
-    <span class="topbar-user" id="topbarUser"></span>
     <button class="btn-logout" onclick="doLogout()">Salir</button>
   </div>
-
   <div class="app-layout">
-
-    <!-- SIDEBAR -->
-    <div class="sidebar" id="sidebar">
-      <div class="sidebar-label" style="margin-bottom:16px">Jugadoras</div>
+    <div class="sidebar">
+      <div class="sidebar-label" style="margin-bottom:12px">Jugadoras</div>
       <div id="playerList"></div>
       <button class="btn-add-player" onclick="openAddPlayer()">
-        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
         Añadir jugadora
       </button>
     </div>
-
-    <!-- MAIN -->
-    <div style="flex:1;display:flex;flex-direction:column;">
+    <div style="flex:1;display:flex;flex-direction:column;min-width:0;">
       <div class="main-content" id="mainContent">
         <div class="empty-state" id="emptyState">
-          <div class="empty-icon">⚽</div>
           <div class="empty-title">Selecciona una jugadora</div>
-          <div class="empty-sub">Elige una jugadora del panel izquierdo para evaluar</div>
+          <div class="empty-sub">Elige del panel para evaluar</div>
         </div>
         <div id="playerPanel" class="hidden"></div>
       </div>
       <div class="save-bar hidden" id="saveBar">
-        <span class="save-status" id="saveStatus">Sin guardar</span>
-        <button class="btn-save" id="saveBtn" onclick="saveEval()">Guardar evaluacion</button>
+        <span class="save-status" id="saveStatus">Sin cambios</span>
+        <button class="btn-save" id="saveBtn" onclick="saveEval()">Guardar</button>
       </div>
     </div>
-
   </div>
 </div>
 
 <!-- MODAL AÑADIR JUGADORA -->
-<div class="modal-overlay hidden" id="addPlayerModal">
+<div class="modal-overlay hidden" id="addModal">
   <div class="modal">
     <div class="modal-header">Nueva jugadora</div>
     <div class="modal-body">
       <div class="field">
         <label>Nombre completo</label>
-        <input type="text" id="newPlayerName" placeholder="Nombre de la jugadora">
+        <input type="text" id="newName" placeholder="Nombre de la jugadora">
       </div>
       <div class="field">
-        <label>Posicion</label>
-        <select id="newPlayerPos" style="width:100%;padding:12px 0;background:transparent;border:none;border-bottom:1px solid var(--border);color:var(--white);font-size:15px;outline:none;">
-          <option value="Portera">Portera</option>
-          <option value="Defensa">Defensa</option>
-          <option value="Lateral">Lateral</option>
-          <option value="Centrocampista">Centrocampista</option>
-          <option value="Mediapunta">Mediapunta</option>
-          <option value="Extremo">Extremo</option>
-          <option value="Delantera">Delantera</option>
+        <label>Posición</label>
+        <select id="newPos">
+          <option>Portera</option><option>Defensa</option><option>Lateral</option>
+          <option>Centrocampista</option><option>Mediapunta</option>
+          <option>Extremo</option><option>Delantera</option>
         </select>
       </div>
       <div class="modal-actions">
         <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
-        <button class="btn-primary btn-confirm" onclick="addPlayer()">Añadir</button>
+        <button class="btn-confirm" onclick="confirmAdd()">Añadir</button>
       </div>
     </div>
   </div>
 </div>
 
-<script>
-/* ================================================================
-   CONFIGURACION SUPABASE
-   Sustituye estos valores con los de tu proyecto en supabase.com
-   Settings → API → Project URL y anon public key
-   ================================================================ */
-const SUPABASE_URL = 'https://woycgqtymdgfwmmaytjw.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_dyG2mdd1F4i7qfPdLHJGzg_RqdG_5Un';
+<div class="toast" id="toast"></div>
 
-/* ================================================================
-   ESTRUCTURA DE EVALUACION
-   ================================================================ */
+<script>
+/* ── SUPABASE ── */
+const SUPA_URL = 'https://woycgqtymdgfwmmaytjw.supabase.co';
+const SUPA_KEY = 'sb_publishable_dyG2mdd1F4i7qfPdLHJGzg_RqdG_5Un';
+const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
+
+/* ── SECCIONES ── */
 const SECTIONS = [
-  {
-    id: 'tecnica', label: 'Tecnica',
-    skills: ['Control y pase', 'Conduccion', 'Remate', 'Juego aereo', 'Tecnica defensiva']
-  },
-  {
-    id: 'fisica', label: 'Fisica',
-    skills: ['Velocidad', 'Resistencia', 'Fuerza', 'Coordinacion', 'Salto']
-  },
-  {
-    id: 'tactica', label: 'Tactica',
-    skills: ['Posicionamiento', 'Presion', 'Transiciones', 'Juego sin balon', 'Lectura del juego']
-  },
-  {
-    id: 'mental', label: 'Mental y Actitud',
-    skills: ['Concentracion', 'Liderazgo', 'Trabajo en equipo', 'Actitud competitiva', 'Respuesta a errores']
-  }
+  { id:'tecnica',  label:'Técnica',         skills:['Control y pase','Conducción','Remate','Juego aéreo','Técnica defensiva'] },
+  { id:'fisica',   label:'Física',           skills:['Velocidad','Resistencia','Fuerza','Coordinación','Salto'] },
+  { id:'tactica',  label:'Táctica',          skills:['Posicionamiento','Presión','Transiciones','Juego sin balón','Lectura del juego'] },
+  { id:'mental',   label:'Mental y Actitud', skills:['Concentración','Liderazgo','Trabajo en equipo','Actitud competitiva','Respuesta a errores'] }
 ];
 
-/* ================================================================
-   STATE
-   ================================================================ */
-let sb = null;
-let currentUser = null;
-let currentCoach = null;
+/* ── STATE ── */
+let coach = null;        // fila de la tabla coaches
 let players = [];
 let selectedPlayer = null;
 let currentDate = new Date().toISOString().split('T')[0];
-let evalData = {}; // { sectionId: { skillName: value, comment: '' } }
+let evalData = {};
 let attendance = null;
 let dirty = false;
 
-/* ================================================================
-   INIT
-   ================================================================ */
-window.addEventListener('DOMContentLoaded', () => {
-  if (SUPABASE_URL.includes('TU_PROYECTO')) {
-    document.getElementById('setupBanner').classList.remove('hidden');
-    initDemo();
-    return;
+/* ── INIT ── */
+sb.auth.onAuthStateChange(async (event, session) => {
+  if (session) {
+    await loadCoach(session.user);
+    showApp();
+  } else {
+    showLogin();
   }
-  sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-  sb.auth.onAuthStateChange((event, session) => {
-    if (session) onLogin(session.user);
-    else showLogin();
-  });
 });
 
-/* ================================================================
-   DEMO MODE (sin Supabase configurado)
-   ================================================================ */
-function initDemo() {
-  currentCoach = { name: 'Demo Entrenador', team: 'Infantil', id: 'demo' };
-  players = [
-    { id:1, name:'Lucía Martínez', position:'Delantera' },
-    { id:2, name:'Sofía Pérez',    position:'Centrocampista' },
-    { id:3, name:'Carla Gómez',    position:'Defensa' },
-    { id:4, name:'Paula Serra',    position:'Extremo' },
-    { id:5, name:'Marina Torres',  position:'Portera' },
-  ];
-  showApp();
-}
-
-/* ================================================================
-   AUTH
-   ================================================================ */
+/* ── AUTH ── */
 async function doLogin() {
   const email = document.getElementById('loginEmail').value.trim();
   const pass  = document.getElementById('loginPass').value;
-  const errEl = document.getElementById('loginError');
-  errEl.textContent = '';
-
-  if (!sb) { initDemo(); return; }
-
-  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
-  if (error) { errEl.textContent = 'Email o contraseña incorrectos'; return; }
-  onLogin(data.user);
+  const err   = document.getElementById('loginError');
+  err.textContent = 'Entrando...';
+  const { error } = await sb.auth.signInWithPassword({ email, password: pass });
+  if (error) { err.textContent = 'Email o contraseña incorrectos'; return; }
+  err.textContent = '';
 }
-
-async function onLogin(user) {
-  currentUser = user;
-  // Load coach profile
-  if (sb) {
-    const { data } = await sb.from('coaches').select('*').eq('user_id', user.id).single();
-    currentCoach = data || { name: user.email, team: 'Mi equipo', id: user.id };
-    await loadPlayers();
-  }
-  showApp();
-}
+document.getElementById('loginPass').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
 
 async function doLogout() {
-  if (sb) await sb.auth.signOut();
-  currentUser = null; currentCoach = null; players = [];
-  selectedPlayer = null; evalData = {};
-  showLogin();
+  await sb.auth.signOut();
 }
 
 function showLogin() {
-  document.getElementById('loginScreen').style.display = 'flex';
-  document.getElementById('appScreen').style.display = 'none';
+  document.getElementById('loginScreen').classList.remove('hidden');
+  document.getElementById('appScreen').classList.add('hidden');
 }
 
 function showApp() {
-  document.getElementById('loginScreen').style.display = 'none';
-  document.getElementById('appScreen').style.display = 'flex';
-  document.getElementById('topbarUser').textContent = currentCoach?.name || '';
-  document.getElementById('topbarTeam').textContent = currentCoach?.team || '';
-  renderPlayerList();
+  document.getElementById('loginScreen').classList.add('hidden');
+  document.getElementById('appScreen').classList.remove('hidden');
+  document.getElementById('topbarTeam').textContent = coach?.team || '';
 }
 
-/* ================================================================
-   PLAYERS
-   ================================================================ */
+/* ── COACH ── */
+async function loadCoach(user) {
+  // Busca el entrenador por user_id
+  const { data } = await sb.from('coaches').select('*').eq('user_id', user.id).single();
+  if (data) {
+    coach = data;
+  } else {
+    // Si no existe aún en coaches, lo crea automáticamente con el email como nombre
+    const { data: newCoach } = await sb.from('coaches')
+      .insert({ user_id: user.id, name: user.email, team: 'Sin equipo' })
+      .select().single();
+    coach = newCoach;
+  }
+  await loadPlayers();
+}
+
+/* ── PLAYERS ── */
 async function loadPlayers() {
-  if (!sb) return;
   const { data } = await sb.from('players')
     .select('*')
-    .eq('coach_id', currentCoach.id)
+    .eq('coach_id', coach.id)
     .order('name');
   players = data || [];
+  renderPlayerList();
 }
 
 function renderPlayerList() {
-  const list = document.getElementById('playerList');
-  list.innerHTML = players.map(p => `
-    <button class="player-btn ${selectedPlayer?.id===p.id?'active':''}"
-      onclick="selectPlayer(${p.id})">
-      <div class="player-initial">${p.name.charAt(0)}</div>
+  document.getElementById('playerList').innerHTML = players.map(p => `
+    <button class="player-btn ${selectedPlayer?.id===p.id?'active':''}" onclick="selectPlayer('${p.id}')">
+      <div class="player-initial">${p.name.charAt(0).toUpperCase()}</div>
       ${p.name}
     </button>
-  `).join('');
+  `).join('') || '<div style="font-size:13px;color:var(--gray);padding:8px">Sin jugadoras</div>';
 }
 
 async function selectPlayer(id) {
-  if (dirty && !confirm('Tienes cambios sin guardar. ¿Continuar sin guardar?')) return;
+  if (dirty && !confirm('Tienes cambios sin guardar. ¿Continuar?')) return;
   selectedPlayer = players.find(p => p.id === id);
   dirty = false;
-  evalData = {};
-  attendance = null;
-  renderPlayerList();
   await loadEval();
   renderPlayerPanel();
-}
-
-function openAddPlayer() { document.getElementById('addPlayerModal').classList.remove('hidden'); }
-function closeModal()    { document.getElementById('addPlayerModal').classList.add('hidden'); }
-
-async function addPlayer() {
-  const name = document.getElementById('newPlayerName').value.trim();
-  const pos  = document.getElementById('newPlayerPos').value;
-  if (!name) return;
-
-  if (sb) {
-    const { data } = await sb.from('players').insert({
-      name, position: pos, coach_id: currentCoach.id
-    }).select().single();
-    if (data) players.push(data);
-  } else {
-    players.push({ id: Date.now(), name, position: pos });
-  }
-
-  closeModal();
-  document.getElementById('newPlayerName').value = '';
   renderPlayerList();
 }
 
-/* ================================================================
-   EVAL LOAD / SAVE
-   ================================================================ */
+function openAddPlayer() { document.getElementById('addModal').classList.remove('hidden'); }
+function closeModal()    { document.getElementById('addModal').classList.add('hidden'); }
+
+async function confirmAdd() {
+  const name = document.getElementById('newName').value.trim();
+  const pos  = document.getElementById('newPos').value;
+  if (!name) return;
+
+  // coach_id se pone automáticamente desde el coach logueado
+  const { data, error } = await sb.from('players')
+    .insert({ name, position: pos, coach_id: coach.id })
+    .select().single();
+
+  if (error) { toast('Error al añadir jugadora'); return; }
+
+  players.push(data);
+  closeModal();
+  document.getElementById('newName').value = '';
+  renderPlayerList();
+  toast('Jugadora añadida correctamente');
+}
+
+/* ── EVAL ── */
 async function loadEval() {
-  if (!sb || !selectedPlayer) return;
   const { data } = await sb.from('evaluations')
     .select('*')
     .eq('player_id', selectedPlayer.id)
     .eq('date', currentDate)
-    .single();
-  if (data) {
-    evalData   = data.data || {};
-    attendance = data.attendance || null;
-  } else {
-    evalData = {}; attendance = null;
-  }
+    .maybeSingle();
+  evalData   = data?.data || {};
+  attendance = data?.attendance || null;
 }
 
 async function saveEval() {
-  const btn = document.getElementById('saveBtn');
-  btn.disabled = true;
+  document.getElementById('saveBtn').disabled = true;
   document.getElementById('saveStatus').textContent = 'Guardando...';
 
-  if (sb && selectedPlayer) {
-    await sb.from('evaluations').upsert({
-      player_id: selectedPlayer.id,
-      coach_id: currentCoach.id,
-      date: currentDate,
-      attendance,
-      data: evalData
-    }, { onConflict: 'player_id,date' });
-  }
+  const { error } = await sb.from('evaluations').upsert({
+    player_id:  selectedPlayer.id,
+    coach_id:   coach.id,
+    date:       currentDate,
+    attendance,
+    data:       evalData
+  }, { onConflict: 'player_id,date' });
+
+  document.getElementById('saveBtn').disabled = false;
+  if (error) { toast('Error al guardar'); return; }
 
   dirty = false;
-  btn.disabled = false;
   const st = document.getElementById('saveStatus');
   st.textContent = 'Guardado correctamente';
   st.className = 'save-status saved';
   setTimeout(() => { st.textContent = 'Sin cambios'; st.className = 'save-status'; }, 2500);
 }
 
-/* ================================================================
-   RENDER PLAYER PANEL
-   ================================================================ */
+/* ── RENDER PANEL ── */
 function renderPlayerPanel() {
-  if (!selectedPlayer) return;
-  const panel = document.getElementById('playerPanel');
   document.getElementById('emptyState').classList.add('hidden');
-  panel.classList.remove('hidden');
   document.getElementById('saveBar').classList.remove('hidden');
-
   const p = selectedPlayer;
+
   let html = `
-    <div class="player-header">
-      <div class="player-header-left">
-        <div class="player-name-big">${p.name}</div>
-        <span class="player-pos-tag">${p.position || ''}</span>
-      </div>
-    </div>
-
-    <!-- SESSION BAR -->
+    <div class="player-name-big">${p.name}</div>
+    <span class="player-pos-tag">${p.position || 'Sin posición'}</span>
     <div class="session-bar">
-      <label>Sesion</label>
-      <input type="date" id="sessionDate" value="${currentDate}" onchange="onDateChange(this.value)">
-      <div class="attendance-group">
-        <button class="att-btn ${attendance==='present'?'present':''}" onclick="setAttendance('present')">Presente</button>
-        <button class="att-btn ${attendance==='absent'?'absent':''}"  onclick="setAttendance('absent')">Falta</button>
-        <button class="att-btn ${attendance==='injured'?'injured':''}" onclick="setAttendance('injured')">Lesion</button>
+      <label>Sesión</label>
+      <input type="date" value="${currentDate}" onchange="onDateChange(this.value)" style="color-scheme:dark">
+      <div class="att-group">
+        <button class="att-btn ${attendance==='present'?'present':''}" onclick="setAtt('present',this)">Presente</button>
+        <button class="att-btn ${attendance==='absent'?'absent':''}"   onclick="setAtt('absent',this)">Falta</button>
+        <button class="att-btn ${attendance==='injured'?'injured':''}" onclick="setAtt('injured',this)">Lesión</button>
       </div>
-    </div>
-  `;
+    </div>`;
 
-  // SECTIONS
   SECTIONS.forEach(sec => {
     const avg = sectionAvg(sec);
     html += `
       <div class="eval-section">
         <div class="eval-section-header">
           <span class="eval-section-title">${sec.label}</span>
-          <span class="section-avg ${colorClass(avg)}">${avg > 0 ? avg.toFixed(1) : '-'}</span>
+          <span class="section-avg ${colorClass(avg)}" id="avg_${sec.id}">${avg>0?avg.toFixed(1):'-'}</span>
         </div>
         <div class="eval-section-body">
-          ${sec.skills.map(skill => skillRow(sec.id, skill)).join('')}
-          <label class="comment-label">Comentario — ${sec.label}</label>
-          <textarea class="comment-box" placeholder="Observaciones del entrenador..."
-            onchange="setComment('${sec.id}', this.value)"
-          >${(evalData[sec.id]?.comment)||''}</textarea>
+          ${sec.skills.map(sk => skillRow(sec.id, sk)).join('')}
+          <label class="comment-label">Comentario</label>
+          <textarea class="comment-box" placeholder="Observaciones..."
+            onchange="setComment('${sec.id}',this.value)">${evalData[sec.id]?.comment||''}</textarea>
         </div>
-      </div>
-    `;
+      </div>`;
   });
 
+  const panel = document.getElementById('playerPanel');
   panel.innerHTML = html;
+  panel.classList.remove('hidden');
 
-  // wire sliders
   SECTIONS.forEach(sec => {
-    sec.skills.forEach(skill => {
-      const sid = skillId(sec.id, skill);
+    sec.skills.forEach(sk => {
+      const sid = skId(sec.id, sk);
       const slider = document.getElementById('sl_'+sid);
-      const valEl  = document.getElementById('val_'+sid);
+      const valEl  = document.getElementById('vl_'+sid);
       if (!slider) return;
       slider.addEventListener('input', () => {
         const v = parseFloat(slider.value);
         valEl.textContent = v.toFixed(0);
         valEl.className = 'skill-val ' + colorClass(v);
-        setSkill(sec.id, skill, v);
-        updateSectionAvg(sec);
+        setSkill(sec.id, sk, v);
+        const avg = sectionAvg(sec);
+        const avgEl = document.getElementById('avg_'+sec.id);
+        if (avgEl) { avgEl.textContent = avg>0?avg.toFixed(1):'-'; avgEl.className='section-avg '+colorClass(avg); }
         markDirty();
       });
     });
   });
 }
 
-function skillId(secId, skill) {
-  return (secId + '_' + skill).replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_]/g,'');
+function skId(secId, skill) {
+  return (secId+'_'+skill).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_]/g,'');
 }
 
 function skillRow(secId, skill) {
-  const val = (evalData[secId]?.[skill]) ?? 5;
-  const sid = skillId(secId, skill);
+  const val = evalData[secId]?.[skill] ?? 5;
+  const sid = skId(secId, skill);
   return `
     <div class="skill-row">
       <span class="skill-name">${skill}</span>
-      <div class="skill-slider-wrap">
-        <input type="range" class="skill-slider" id="sl_${sid}"
-          min="0" max="10" step="0.5" value="${val}">
-      </div>
-      <span class="skill-val ${colorClass(val)}" id="val_${sid}">${parseFloat(val).toFixed(0)}</span>
-    </div>
-  `;
+      <input type="range" class="skill-slider" id="sl_${sid}" min="0" max="10" step="0.5" value="${val}">
+      <span class="skill-val ${colorClass(val)}" id="vl_${sid}">${parseFloat(val).toFixed(0)}</span>
+    </div>`;
 }
 
 function sectionAvg(sec) {
-  const vals = sec.skills.map(s => evalData[sec.id]?.[s]).filter(v => v !== undefined);
+  const vals = sec.skills.map(s => evalData[sec.id]?.[s]).filter(v => v!==undefined);
   if (!vals.length) return 0;
-  return vals.reduce((a,b) => a+parseFloat(b), 0) / vals.length;
-}
-
-function updateSectionAvg(sec) {
-  const avg = sectionAvg(sec);
-  const el = document.querySelector(`.eval-section-header .section-avg`);
-  // find the right one by iterating
-  document.querySelectorAll('.eval-section').forEach(node => {
-    const title = node.querySelector('.eval-section-title');
-    if (title && title.textContent === sec.label) {
-      const avgEl = node.querySelector('.section-avg');
-      avgEl.textContent = avg > 0 ? avg.toFixed(1) : '-';
-      avgEl.className = 'section-avg ' + colorClass(avg);
-    }
-  });
+  return vals.reduce((a,b)=>a+parseFloat(b),0)/vals.length;
 }
 
 function colorClass(v) {
-  if (!v || v < 5)  return 'color-red';
-  if (v < 7)        return 'color-yellow';
+  if (!v||v<5) return 'color-red';
+  if (v<7)     return 'color-yellow';
   return 'color-green';
 }
 
-function setSkill(secId, skill, val) {
-  if (!evalData[secId]) evalData[secId] = {};
-  evalData[secId][skill] = val;
+function setSkill(secId, sk, val) {
+  if (!evalData[secId]) evalData[secId]={};
+  evalData[secId][sk]=val;
 }
 
 function setComment(secId, val) {
-  if (!evalData[secId]) evalData[secId] = {};
-  evalData[secId].comment = val;
+  if (!evalData[secId]) evalData[secId]={};
+  evalData[secId].comment=val;
   markDirty();
 }
 
-function setAttendance(val) {
-  attendance = val;
-  document.querySelectorAll('.att-btn').forEach(b => b.className = 'att-btn');
-  const map = { present:'present', absent:'absent', injured:'injured' };
-  document.querySelectorAll('.att-btn').forEach(b => {
-    if (b.textContent.trim().toLowerCase().startsWith(val === 'present' ? 'prese' : val === 'absent' ? 'falt' : 'les'))
-      b.classList.add(map[val]);
-  });
+function setAtt(val, btn) {
+  attendance=val;
+  document.querySelectorAll('.att-btn').forEach(b=>b.className='att-btn');
+  btn.classList.add(val);
   markDirty();
 }
 
 async function onDateChange(val) {
-  currentDate = val;
+  currentDate=val;
   await loadEval();
   renderPlayerPanel();
 }
 
 function markDirty() {
-  dirty = true;
-  const st = document.getElementById('saveStatus');
-  st.textContent = 'Cambios sin guardar';
-  st.className = 'save-status';
+  dirty=true;
+  const st=document.getElementById('saveStatus');
+  st.textContent='Cambios sin guardar';
+  st.className='save-status';
+}
+
+function toast(msg) {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
 }
 </script>
-
-<!-- ================================================================
-     SQL PARA SUPABASE (ejecuta esto en el SQL Editor de Supabase)
-     ================================================================
--- Tabla entrenadores
-create table coaches (
-  id uuid primary key default gen_random_uuid(),
-  user_id uuid references auth.users(id),
-  name text not null,
-  team text not null
-);
-
--- Tabla jugadoras
-create table players (
-  id uuid primary key default gen_random_uuid(),
-  coach_id uuid references coaches(id),
-  name text not null,
-  position text
-);
-
--- Tabla evaluaciones
-create table evaluations (
-  id uuid primary key default gen_random_uuid(),
-  player_id uuid references players(id),
-  coach_id uuid references coaches(id),
-  date date not null,
-  attendance text,
-  data jsonb,
-  unique(player_id, date)
-);
-
--- RLS: cada entrenador solo ve sus datos
-alter table players enable row level security;
-alter table evaluations enable row level security;
-
-create policy "coach sees own players" on players
-  for all using (coach_id = (select id from coaches where user_id = auth.uid()));
-
-create policy "coach sees own evals" on evaluations
-  for all using (coach_id = (select id from coaches where user_id = auth.uid()));
-================================================================ -->
-
 </body>
 </html>
