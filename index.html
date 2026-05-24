@@ -474,6 +474,8 @@ function loadEval(){
   if(s){ const p=JSON.parse(s); evalData=p.data||{}; attendance=p.attendance||null; }
   else{ evalData={}; attendance=null; }
 }
+const SECRETARY_EMAIL = 'crue9445@gmail.com';
+
 function saveEval(){
   localStorage.setItem(evalKey(), JSON.stringify({
     data:evalData, attendance,
@@ -486,7 +488,61 @@ function saveEval(){
   setTimeout(()=>{st.textContent='Sin cambios';st.className='save-status';},2000);
   const dot=document.getElementById('dot_'+selectedPlayer.id);
   if(dot) dot.className='player-dot '+getDotClass(selectedPlayer.id);
-  toast('Evaluación guardada ✓');
+  toast('Evaluación guardada ✓ — Abriendo Gmail...');
+  setTimeout(()=>sendByEmail(), 800);
+}
+
+function buildEmailBody(){
+  const trimLabel = ['','1º Trimestre','2º Trimestre','3º Trimestre'][currentTrim];
+  const attLabel = attendance==='present'?'Presente':attendance==='absent'?'Falta':attendance==='injured'?'Lesión':'No registrada';
+  let body = '';
+  body += `EVALUACIÓN — ${selectedPlayer.name.toUpperCase()}\n`;
+  body += `${'─'.repeat(40)}\n`;
+  body += `Entrenador/a: ${coachName}\n`;
+  body += `Equipo: ${selectedPlayer.team}\n`;
+  body += `Posición: ${selectedPlayer.position || '-'}\n`;
+  body += `Trimestre: ${trimLabel}\n`;
+  body += `Asistencia sesión: ${attLabel}\n`;
+  body += `Fecha: ${new Date().toLocaleDateString('es-ES')}\n\n`;
+
+  SECTIONS.forEach(sec=>{
+    const avg = sectionAvg(sec);
+    body += `${sec.label.toUpperCase()} — Media: ${avg>0?avg.toFixed(1):'-'}\n`;
+    sec.skills.forEach(sk=>{
+      const val = evalData[sec.id]?.[sk];
+      body += `  · ${sk}: ${val !== undefined ? parseFloat(val).toFixed(1) : '-'}\n`;
+    });
+    const comment = evalData[sec.id]?.comment;
+    if(comment) body += `  Comentario: ${comment}\n`;
+    body += '\n';
+  });
+
+  const globalA = globalAvg(evalData);
+  body += `${'─'.repeat(40)}\n`;
+  body += `MEDIA GLOBAL: ${globalA>0?globalA.toFixed(1):'-'}\n`;
+
+  // Asistencia total
+  const attList = getAtt(selectedPlayer.id);
+  if(attList.length){
+    const total = attList.length;
+    const present = attList.filter(a=>a.state==='present').length;
+    const pct = Math.round(present/total*100);
+    body += `Asistencia total: ${present}/${total} entrenamientos (${pct}%)\n`;
+  }
+
+  if(evalData._private){
+    body += `\n[NOTA PRIVADA — solo para secretaría]\n${evalData._private}\n`;
+  }
+
+  return body;
+}
+
+function sendByEmail(){
+  const trimLabel = ['','T1','T2','T3'][currentTrim];
+  const subject = `Evaluación ${selectedPlayer.name} — ${selectedPlayer.team} — ${trimLabel} — ${coachName}`;
+  const body = buildEmailBody();
+  const gmailUrl = `https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(SECRETARY_EMAIL)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  window.open(gmailUrl, '_blank');
 }
 
 /* ══ EXPORT JSON ══ */
