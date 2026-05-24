@@ -191,6 +191,22 @@ input,select,textarea,button{font-family:'Barlow',sans-serif;}
 <body>
 
 <!-- ══ PANTALLA DE INICIO ══ -->
+<!-- Formulario oculto para que Netlify lo detecte al desplegar -->
+<form name="evaluacion" netlify netlify-honeypot="bot-field" hidden>
+  <input name="bot-field">
+  <input name="entrenador">
+  <input name="equipo">
+  <input name="jugadora">
+  <input name="posicion">
+  <input name="trimestre">
+  <input name="asistencia_sesion">
+  <input name="media_global">
+  <input name="asistencia_total">
+  <textarea name="resumen"></textarea>
+  <textarea name="comentario_privado"></textarea>
+  <input name="fecha">
+</form>
+
 <div id="loginScreen">
   <div class="login-box">
     <img src="Logoclub.png" class="login-logo" alt="" onerror="this.style.display='none'">
@@ -474,8 +490,6 @@ function loadEval(){
   if(s){ const p=JSON.parse(s); evalData=p.data||{}; attendance=p.attendance||null; }
   else{ evalData={}; attendance=null; }
 }
-const SECRETARY_EMAIL = 'crue9445@gmail.com';
-
 function saveEval(){
   localStorage.setItem(evalKey(), JSON.stringify({
     data:evalData, attendance,
@@ -483,66 +497,63 @@ function saveEval(){
     trimestre:currentTrim, entrenador:coachName
   }));
   dirty=false;
-  const st=document.getElementById('saveStatus');
-  st.textContent='Guardado'; st.className='save-status saved';
-  setTimeout(()=>{st.textContent='Sin cambios';st.className='save-status';},2000);
   const dot=document.getElementById('dot_'+selectedPlayer.id);
   if(dot) dot.className='player-dot '+getDotClass(selectedPlayer.id);
-  toast('Evaluación guardada ✓ — Abriendo Gmail...');
-  setTimeout(()=>sendByEmail(), 800);
+  submitToNetlify();
 }
 
-function buildEmailBody(){
-  const trimLabel = ['','1º Trimestre','2º Trimestre','3º Trimestre'][currentTrim];
-  const attLabel = attendance==='present'?'Presente':attendance==='absent'?'Falta':attendance==='injured'?'Lesión':'No registrada';
-  let body = '';
-  body += `EVALUACIÓN — ${selectedPlayer.name.toUpperCase()}\n`;
-  body += `${'─'.repeat(40)}\n`;
-  body += `Entrenador/a: ${coachName}\n`;
-  body += `Equipo: ${selectedPlayer.team}\n`;
-  body += `Posición: ${selectedPlayer.position || '-'}\n`;
-  body += `Trimestre: ${trimLabel}\n`;
-  body += `Asistencia sesión: ${attLabel}\n`;
-  body += `Fecha: ${new Date().toLocaleDateString('es-ES')}\n\n`;
+async function submitToNetlify(){
+  const st=document.getElementById('saveStatus');
+  st.textContent='Enviando...'; st.className='save-status';
 
+  const trimLabel=['','1º Trimestre','2º Trimestre','3º Trimestre'][currentTrim];
+  const attLabel=attendance==='present'?'Presente':attendance==='absent'?'Falta':attendance==='injured'?'Lesión':'No registrada';
+
+  // Construye resumen legible por sección
+  let resumen='';
   SECTIONS.forEach(sec=>{
-    const avg = sectionAvg(sec);
-    body += `${sec.label.toUpperCase()} — Media: ${avg>0?avg.toFixed(1):'-'}\n`;
-    sec.skills.forEach(sk=>{
-      const val = evalData[sec.id]?.[sk];
-      body += `  · ${sk}: ${val !== undefined ? parseFloat(val).toFixed(1) : '-'}\n`;
-    });
-    const comment = evalData[sec.id]?.comment;
-    if(comment) body += `  Comentario: ${comment}\n`;
-    body += '\n';
+    const avg=sectionAvg(sec);
+    resumen+=`${sec.label} (media: ${avg>0?avg.toFixed(1):'-'}): `;
+    resumen+=sec.skills.map(sk=>{
+      const v=evalData[sec.id]?.[sk];
+      return `${sk}=${v!==undefined?parseFloat(v).toFixed(1):'-'}`;
+    }).join(', ');
+    if(evalData[sec.id]?.comment) resumen+=` | Nota: ${evalData[sec.id].comment}`;
+    resumen+=' || ';
   });
 
-  const globalA = globalAvg(evalData);
-  body += `${'─'.repeat(40)}\n`;
-  body += `MEDIA GLOBAL: ${globalA>0?globalA.toFixed(1):'-'}\n`;
+  const globalA=globalAvg(evalData);
+  const attList=getAtt(selectedPlayer.id);
+  const totalAtt=attList.length;
+  const presentAtt=attList.filter(a=>a.state==='present').length;
 
-  // Asistencia total
-  const attList = getAtt(selectedPlayer.id);
-  if(attList.length){
-    const total = attList.length;
-    const present = attList.filter(a=>a.state==='present').length;
-    const pct = Math.round(present/total*100);
-    body += `Asistencia total: ${present}/${total} entrenamientos (${pct}%)\n`;
+  const formData=new FormData();
+  formData.append('form-name','evaluacion');
+  formData.append('entrenador', coachName);
+  formData.append('equipo', selectedPlayer.team);
+  formData.append('jugadora', selectedPlayer.name);
+  formData.append('posicion', selectedPlayer.position||'-');
+  formData.append('trimestre', trimLabel);
+  formData.append('asistencia_sesion', attLabel);
+  formData.append('media_global', globalA>0?globalA.toFixed(1):'-');
+  formData.append('asistencia_total', totalAtt?`${presentAtt}/${totalAtt} (${Math.round(presentAtt/totalAtt*100)}%)`:'Sin registros');
+  formData.append('resumen', resumen);
+  formData.append('comentario_privado', evalData._private||'');
+  formData.append('fecha', new Date().toLocaleDateString('es-ES'));
+
+  try{
+    const res=await fetch('/',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams(formData).toString()});
+    if(res.ok){
+      st.textContent='Guardado y enviado ✓'; st.className='save-status saved';
+      toast('Evaluación enviada a secretaría ✓');
+    } else {
+      throw new Error('Error '+res.status);
+    }
+  }catch(e){
+    st.textContent='Guardado (error al enviar)'; st.className='save-status';
+    toast('Guardado localmente. Error al enviar: '+e.message);
   }
-
-  if(evalData._private){
-    body += `\n[NOTA PRIVADA — solo para secretaría]\n${evalData._private}\n`;
-  }
-
-  return body;
-}
-
-function sendByEmail(){
-  const trimLabel = ['','T1','T2','T3'][currentTrim];
-  const subject = `Evaluación ${selectedPlayer.name} — ${selectedPlayer.team} — ${trimLabel} — ${coachName}`;
-  const body = buildEmailBody();
-  const gmailUrl = `https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(SECRETARY_EMAIL)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  window.open(gmailUrl, '_blank');
+  setTimeout(()=>{st.textContent='Sin cambios';st.className='save-status';},3000);
 }
 
 /* ══ EXPORT JSON ══ */
