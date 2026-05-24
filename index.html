@@ -20,11 +20,38 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .hidden{display:none!important;}
 input,select,textarea,button{font-family:'Barlow',sans-serif;}
 
+/* ── PANTALLA DE INICIO ── */
+#loginScreen{
+  position:fixed;inset:0;background:var(--black);z-index:9999;
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;
+}
+.login-box{
+  width:100%;max-width:440px;
+  background:var(--card-bg);border:1px solid var(--border);border-radius:6px;
+  padding:40px 36px;
+}
+.login-logo{height:48px;margin-bottom:24px;display:block;}
+.login-title{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:.04em;margin-bottom:4px;}
+.login-sub{font-size:13px;color:var(--gray);margin-bottom:32px;}
+.login-field{margin-bottom:20px;}
+.login-label{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--gray);display:block;margin-bottom:8px;}
+.login-input{width:100%;background:transparent;border:none;border-bottom:1px solid var(--border);color:var(--white);font-size:15px;padding:8px 0;outline:none;transition:border-color .3s;}
+.login-input:focus{border-color:var(--purple);}
+.login-select{width:100%;background:#111;border:1px solid var(--border);border-radius:2px;color:var(--white);font-size:14px;padding:9px 12px;outline:none;cursor:pointer;transition:border-color .3s;}
+.login-select:focus{border-color:var(--purple);}
+.btn-login{width:100%;margin-top:10px;padding:14px;background:var(--purple);color:var(--black);border:none;border-radius:2px;font-weight:700;font-size:13px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:background .3s;}
+.btn-login:hover{background:#d8b4fe;}
+
 /* TOPBAR */
 .topbar{position:sticky;top:0;z-index:100;background:rgba(8,8,8,.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);height:60px;display:flex;align-items:center;padding:0 20px;gap:14px;}
 .topbar-logo{height:32px;}
 .topbar-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.06em;}
 .topbar-spacer{flex:1;}
+.topbar-user{font-size:12px;color:var(--gray);display:flex;align-items:center;gap:8px;}
+.topbar-user strong{color:var(--white);}
+.btn-logout{background:transparent;border:1px solid var(--border);border-radius:2px;color:var(--gray);font-size:11px;padding:5px 10px;cursor:pointer;letter-spacing:.08em;text-transform:uppercase;transition:all .2s;}
+.btn-logout:hover{border-color:var(--red);color:var(--red);}
 
 /* NAV TABS */
 .nav-tabs{display:flex;border-bottom:1px solid var(--border);background:#0a0a0a;}
@@ -129,21 +156,15 @@ input,select,textarea,button{font-family:'Barlow',sans-serif;}
 .att-del:hover{color:var(--red);}
 .att-empty{padding:28px;text-align:center;color:var(--gray);font-size:14px;}
 
-/* VISTA GENERAL ASISTENCIA (tab equipo) */
-.team-att-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:20px;}
-.team-att-card{background:var(--card-bg);border:1px solid var(--border);border-radius:4px;padding:16px;cursor:pointer;transition:border-color .3s;}
-.team-att-card:hover{border-color:rgba(192,132,252,.4);}
-.team-att-name{font-size:14px;font-weight:600;margin-bottom:8px;}
-.team-att-bars{display:flex;gap:4px;height:6px;border-radius:3px;overflow:hidden;}
-.bar-green{background:var(--green);} .bar-red{background:var(--red);} .bar-yellow{background:var(--yellow);}
-.team-att-stats{display:flex;gap:10px;margin-top:6px;font-size:12px;color:var(--gray);}
-
 /* SAVE BAR */
 .save-bar{position:sticky;bottom:0;background:rgba(8,8,8,.96);backdrop-filter:blur(12px);border-top:1px solid var(--border);padding:12px 32px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
 .save-status{font-size:12px;color:var(--gray);}
 .save-status.saved{color:var(--green);}
+.save-actions{display:flex;gap:10px;align-items:center;}
 .btn-save{padding:11px 28px;background:var(--purple);color:var(--black);border:none;border-radius:2px;font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:background .3s;}
 .btn-save:hover{background:#d8b4fe;}
+.btn-export{padding:11px 18px;background:transparent;color:var(--gray);border:1px solid var(--border);border-radius:2px;font-weight:600;font-size:12px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:all .3s;}
+.btn-export:hover{border-color:var(--purple);color:var(--purple);}
 
 /* TOAST */
 .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1a1a1a;border:1px solid var(--border);border-radius:4px;padding:12px 20px;font-size:13px;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;}
@@ -163,24 +184,51 @@ input,select,textarea,button{font-family:'Barlow',sans-serif;}
   .att-log-header,.att-log-row{grid-template-columns:90px 80px 1fr 28px;font-size:12px;}
   .trim-bar{flex-wrap:wrap;}
   .nav-tab{padding:11px 14px;font-size:11px;}
+  .topbar-user{display:none;}
 }
 </style>
 </head>
 <body>
 
+<!-- ══ PANTALLA DE INICIO ══ -->
+<div id="loginScreen">
+  <div class="login-box">
+    <img src="Logoclub.png" class="login-logo" alt="" onerror="this.style.display='none'">
+    <div class="login-title">Bienvenido/a</div>
+    <div class="login-sub">Introduce tus datos para continuar</div>
+
+    <div class="login-field">
+      <label class="login-label">Nombre del entrenador/a</label>
+      <input type="text" id="loginName" class="login-input" placeholder="Ej: Carlos García" autocomplete="name">
+    </div>
+
+    <div class="login-field">
+      <label class="login-label">Tu equipo</label>
+      <select id="loginTeam" class="login-select">
+        <option value="">— Selecciona equipo —</option>
+      </select>
+    </div>
+
+    <button class="btn-login" onclick="doLogin()">Entrar</button>
+  </div>
+</div>
+
+<!-- ══ APP ══ -->
+<div id="appShell" class="hidden">
+
 <div class="topbar">
   <img src="Logoclub.png" class="topbar-logo" alt="" onerror="this.style.display='none'">
   <span class="topbar-title">Evaluaciones</span>
   <div class="topbar-spacer"></div>
+  <div class="topbar-user" id="topbarUser"></div>
+  <button class="btn-logout" onclick="doLogout()">Salir</button>
 </div>
 
-<!-- TABS -->
 <div class="nav-tabs">
   <button class="nav-tab active" onclick="switchTab('eval',this)">Evaluaciones</button>
   <button class="nav-tab" onclick="switchTab('asistencia',this)">Asistencia</button>
 </div>
 
-<!-- TRIM BAR (solo en eval) -->
 <div class="trim-bar" id="trimBar">
   <span class="trim-label">Trimestre</span>
   <button class="trim-btn active" onclick="setTrim(1,this)">1º Trimestre</button>
@@ -189,33 +237,37 @@ input,select,textarea,button{font-family:'Barlow',sans-serif;}
 </div>
 
 <div class="app-layout">
-  <!-- SIDEBAR -->
   <div class="sidebar">
     <div id="teamList"><div style="padding:16px;font-size:12px;color:var(--gray)">Cargando...</div></div>
   </div>
 
-  <!-- MAIN -->
   <div style="flex:1;display:flex;flex-direction:column;min-width:0;">
     <div class="main-content" id="mainContent">
       <div class="empty-state" id="emptyState">
         <div class="empty-title">Selecciona una jugadora</div>
-        <div class="empty-sub">Elige equipo y jugadora del panel</div>
+        <div class="empty-sub">Elige una jugadora del panel</div>
       </div>
       <div id="evalPanel" class="hidden"></div>
       <div id="attPanel" class="hidden"></div>
     </div>
     <div class="save-bar hidden" id="saveBar">
       <span class="save-status" id="saveStatus">Sin cambios</span>
-      <button class="btn-save" onclick="saveEval()">Guardar evaluación</button>
+      <div class="save-actions">
+        <button class="btn-export" onclick="exportJSON()">⬇ Descargar JSON</button>
+        <button class="btn-save" onclick="saveEval()">Guardar evaluación</button>
+      </div>
     </div>
   </div>
 </div>
+
+</div><!-- /appShell -->
 
 <div class="toast" id="toast"></div>
 
 <script>
 const SHEETS_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR2T9BCW-_d1I5dFfPBQtIPVTkBE_vOGC0pUZVOM4iY-0yBz3KfBVLOBSqnGudEWcPHorn62BQxYbrp/pub?output=csv';
-const TEAM_ORDER = ['Autonomica','Juvenil','Cadete','Cadete 2','Alevin','Infantil'];
+// Equipos fijos — añade o cambia nombres aquí si cambian en Sheets
+const TEAM_ORDER = ['Infantil','Regional A','Regional B','Autonomica','Juvenil','Cadete','Cadete 2','Alevin'];
 const SECTIONS = [
   {id:'tecnica', label:'Técnica',         skills:['Control y pase','Conducción','Remate','Juego aéreo','Técnica defensiva']},
   {id:'fisica',  label:'Física',           skills:['Velocidad','Resistencia','Fuerza','Coordinación','Salto']},
@@ -226,31 +278,98 @@ const SECTIONS = [
 let players=[], teams={}, selectedPlayer=null;
 let currentTrim=1, currentTab='eval';
 let evalData={}, attendance=null, dirty=false;
+let coachName='', coachTeam='';
 
-/* ── LOAD ── */
+/* ══ LOGIN ══ */
+function doLogin(){
+  const name = document.getElementById('loginName').value.trim();
+  const team = document.getElementById('loginTeam').value;
+  if(!name){ alert('Introduce tu nombre'); return; }
+  if(!team){ alert('Selecciona tu equipo'); return; }
+  coachName = name;
+  coachTeam = team;
+  localStorage.setItem('coach_name', name);
+  localStorage.setItem('coach_team', team);
+  showApp();
+}
+
+function doLogout(){
+  // Solo limpia la sesión activa, no los datos guardados
+  localStorage.removeItem('coach_name');
+  localStorage.removeItem('coach_team');
+  location.reload();
+}
+
+function showApp(){
+  document.getElementById('loginScreen').classList.add('hidden');
+  document.getElementById('appShell').classList.remove('hidden');
+  document.getElementById('topbarUser').innerHTML =
+    `<strong>${coachName}</strong> &mdash; ${coachTeam}`;
+  // Filtra sidebar para mostrar solo el equipo del entrenador
+  renderSidebar();
+  // Abre automáticamente el equipo del entrenador
+  autoOpenCoachTeam();
+}
+
+function autoOpenCoachTeam(){
+  // Encuentra el índice del bloque del equipo del entrenador y ábrelo
+  const order = getSortedTeams();
+  const idx = order.indexOf(coachTeam);
+  if(idx >= 0){
+    const block = document.getElementById('team_'+idx);
+    if(block && !block.classList.contains('open')){
+      block.classList.add('open');
+    }
+  }
+}
+
+/* ══ LOAD PLAYERS ══ */
 async function loadPlayers(){
   try{
-    const res=await fetch(SHEETS_CSV+'&t='+Date.now());
-    const text=await res.text();
-    const data=Papa.parse(text,{header:true,skipEmptyLines:true}).data;
-    players=data.map((r,i)=>({
+    const res = await fetch(SHEETS_CSV+'&t='+Date.now());
+    const text = await res.text();
+    const data = Papa.parse(text,{header:true,skipEmptyLines:true}).data;
+    players = data.map((r,i)=>({
       id:i,
       name:(r.nombre||r.Nombre||r.name||Object.values(r)[0]||'').trim(),
       position:(r.posicion||r.Posicion||r.position||Object.values(r)[1]||'').trim(),
       team:(r.equipo||r.Equipo||r.team||Object.values(r)[2]||'Sin equipo').trim()
     })).filter(p=>p.name);
-  }catch(e){players=[];}
+  }catch(e){ players=[]; }
+
   teams={};
   players.forEach(p=>{if(!teams[p.team])teams[p.team]=[];teams[p.team].push(p);});
-  renderSidebar();
+
+  // Comprueba si ya hay sesión guardada
+  const savedName = localStorage.getItem('coach_name');
+  const savedTeam = localStorage.getItem('coach_team');
+  if(savedName && savedTeam && teams[savedTeam]){
+    coachName = savedName;
+    coachTeam = savedTeam;
+    showApp();
+  }
+  // Si no hay sesión, el loginScreen ya está visible
 }
 
-/* ── SIDEBAR ── */
+function populateLoginTeams(){
+  // Equipos fijos — no depende de que Sheets cargue
+  const sel = document.getElementById('loginTeam');
+  TEAM_ORDER.forEach(t=>{
+    const opt = document.createElement('option');
+    opt.value = t; opt.textContent = t;
+    sel.appendChild(opt);
+  });
+}
+
+function getSortedTeams(){
+  return [...TEAM_ORDER,...Object.keys(teams).filter(t=>!TEAM_ORDER.includes(t))].filter(t=>teams[t]);
+}
+
+/* ══ SIDEBAR ══ */
 function renderSidebar(){
-  const order=[...TEAM_ORDER,...Object.keys(teams).filter(t=>!TEAM_ORDER.includes(t))];
-  const existing=order.filter(t=>teams[t]);
-  document.getElementById('teamList').innerHTML=existing.map((team,ti)=>`
-    <div class="team-block ${ti===0?'open':''}" id="team_${ti}">
+  const order = getSortedTeams();
+  document.getElementById('teamList').innerHTML = order.map((team,ti)=>`
+    <div class="team-block ${team===coachTeam?'open':''}" id="team_${ti}">
       <div class="team-header" onclick="toggleTeam(${ti})">
         <span class="team-name">${team}</span>
         <span class="team-chevron">▼</span>
@@ -264,18 +383,21 @@ function renderSidebar(){
             <div class="player-dot ${getDotClass(p.id)}" id="dot_${p.id}"></div>
           </button>`).join('')}
       </div>
-    </div>`).join('')||'<div style="padding:16px;font-size:12px;color:var(--gray)">Añade jugadoras en Sheets</div>';
+    </div>`).join('')
+  || '<div style="padding:16px;font-size:12px;color:var(--gray)">Añade jugadoras en Sheets</div>';
 }
 
-function toggleTeam(ti){document.getElementById('team_'+ti).classList.toggle('open');}
+function toggleTeam(ti){
+  document.getElementById('team_'+ti).classList.toggle('open');
+}
 
 function getDotClass(pid){
-  const saved=localStorage.getItem(`eval_${pid}_${currentTrim}`);
-  if(!saved)return '';
-  const avg=globalAvg(JSON.parse(saved).data||{});
-  if(avg<=0)return '';
-  if(avg<5)return 'dot-red';
-  if(avg<7)return 'dot-yellow';
+  const saved = localStorage.getItem(`eval_${pid}_${currentTrim}`);
+  if(!saved) return '';
+  const avg = globalAvg(JSON.parse(saved).data||{});
+  if(avg<=0) return '';
+  if(avg<5) return 'dot-red';
+  if(avg<7) return 'dot-yellow';
   return 'dot-green';
 }
 
@@ -287,7 +409,7 @@ function globalAvg(data){
   return count?total/count:0;
 }
 
-/* ── TABS ── */
+/* ══ TABS ══ */
 function switchTab(tab, btn){
   currentTab=tab;
   document.querySelectorAll('.nav-tab').forEach(b=>b.classList.remove('active'));
@@ -310,7 +432,7 @@ function renderCurrentTab(){
   else renderAttPanel();
 }
 
-/* ── TRIMESTRE ── */
+/* ══ TRIMESTRE ══ */
 function setTrim(n,btn){
   if(dirty&&!confirm('Cambios sin guardar. ¿Continuar?'))return;
   currentTrim=n; dirty=false;
@@ -320,43 +442,96 @@ function setTrim(n,btn){
   renderSidebar();
 }
 
-/* ── SELECT PLAYER ── */
+/* ══ SELECT PLAYER ══ */
 function selectPlayer(id){
   if(dirty&&!confirm('Cambios sin guardar. ¿Continuar?'))return;
-  selectedPlayer=players.find(p=>p.id===id);
+  const newPlayer = players.find(p=>p.id===id);
+  const prevTeam = selectedPlayer?.team;
+  selectedPlayer = newPlayer;
   dirty=false;
   loadEval();
+
+  // Cierra todos los equipos excepto el de la jugadora seleccionada
+  const order = getSortedTeams();
+  order.forEach((team,ti)=>{
+    const block = document.getElementById('team_'+ti);
+    if(!block) return;
+    if(team === newPlayer.team){
+      block.classList.add('open');
+    } else {
+      block.classList.remove('open');
+    }
+  });
+
   renderSidebar();
   renderCurrentTab();
 }
 
-/* ── EVAL STORAGE ── */
-function evalKey(){return `eval_${selectedPlayer.id}_${currentTrim}`;}
+/* ══ EVAL STORAGE ══ */
+function evalKey(){ return `eval_${selectedPlayer.id}_${currentTrim}`; }
 function loadEval(){
-  const s=localStorage.getItem(evalKey());
-  if(s){const p=JSON.parse(s);evalData=p.data||{};attendance=p.attendance||null;}
-  else{evalData={};attendance=null;}
+  const s = localStorage.getItem(evalKey());
+  if(s){ const p=JSON.parse(s); evalData=p.data||{}; attendance=p.attendance||null; }
+  else{ evalData={}; attendance=null; }
 }
 function saveEval(){
-  localStorage.setItem(evalKey(),JSON.stringify({data:evalData,attendance,jugadora:selectedPlayer.name,equipo:selectedPlayer.team,trimestre:currentTrim}));
+  localStorage.setItem(evalKey(), JSON.stringify({
+    data:evalData, attendance,
+    jugadora:selectedPlayer.name, equipo:selectedPlayer.team,
+    trimestre:currentTrim, entrenador:coachName
+  }));
   dirty=false;
   const st=document.getElementById('saveStatus');
-  st.textContent='Guardado';st.className='save-status saved';
+  st.textContent='Guardado'; st.className='save-status saved';
   setTimeout(()=>{st.textContent='Sin cambios';st.className='save-status';},2000);
   const dot=document.getElementById('dot_'+selectedPlayer.id);
-  if(dot)dot.className='player-dot '+getDotClass(selectedPlayer.id);
-  toast('Evaluación guardada');
+  if(dot) dot.className='player-dot '+getDotClass(selectedPlayer.id);
+  toast('Evaluación guardada ✓');
 }
 
-/* ── ASISTENCIA STORAGE ── */
-function attKey(pid){return `att_${pid}`;}
-function getAtt(pid){
-  const s=localStorage.getItem(attKey(pid));
-  return s?JSON.parse(s):[];
-}
-function saveAtt(pid,list){localStorage.setItem(attKey(pid),JSON.stringify(list));}
+/* ══ EXPORT JSON ══ */
+function exportJSON(){
+  if(!selectedPlayer) return;
+  const payload = {
+    exportado: new Date().toLocaleString('es-ES'),
+    entrenador: coachName,
+    equipo: selectedPlayer.team,
+    jugadora: selectedPlayer.name,
+    posicion: selectedPlayer.position,
+    trimestre: currentTrim,
+    asistencia_sesion: attendance,
+    evaluacion: {}
+  };
+  // Recorre todas las secciones
+  SECTIONS.forEach(sec=>{
+    payload.evaluacion[sec.label] = {};
+    sec.skills.forEach(sk=>{
+      payload.evaluacion[sec.label][sk] = evalData[sec.id]?.[sk] ?? '-';
+    });
+    payload.evaluacion[sec.label]['_comentario'] = evalData[sec.id]?.comment || '';
+    const avg = sectionAvg(sec);
+    payload.evaluacion[sec.label]['_media'] = avg > 0 ? avg.toFixed(1) : '-';
+  });
+  payload['_comentario_privado'] = evalData._private || '';
+  payload['_media_global'] = globalAvg(evalData).toFixed(1);
 
-/* ── RENDER EVAL ── */
+  const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const trimLabel = ['','T1','T2','T3'][currentTrim];
+  a.href = url;
+  a.download = `eval_${selectedPlayer.name.replace(/\s+/g,'_')}_${trimLabel}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('JSON descargado ✓');
+}
+
+/* ══ ASISTENCIA STORAGE ══ */
+function attKey(pid){ return `att_${pid}`; }
+function getAtt(pid){ const s=localStorage.getItem(attKey(pid)); return s?JSON.parse(s):[]; }
+function saveAtt(pid,list){ localStorage.setItem(attKey(pid),JSON.stringify(list)); }
+
+/* ══ RENDER EVAL ══ */
 function renderEvalPanel(){
   document.getElementById('emptyState').classList.add('hidden');
   document.getElementById('attPanel').classList.add('hidden');
@@ -403,7 +578,7 @@ function renderEvalPanel(){
   wireSlideres();
 }
 
-/* ── RENDER ASISTENCIA ── */
+/* ══ RENDER ASISTENCIA ══ */
 function renderAttPanel(){
   document.getElementById('emptyState').classList.add('hidden');
   document.getElementById('evalPanel').classList.add('hidden');
@@ -420,7 +595,6 @@ function renderAttPanel(){
     <div class="player-name-big">${p.name}</div>
     <span class="player-pos-tag">${p.position||''}</span>
     <span class="player-team-tag">${p.team}</span>
-
     <div class="att-summary">
       <div class="att-sum-item">
         <div class="att-sum-num" style="color:var(--green)">${present}</div>
@@ -439,11 +613,10 @@ function renderAttPanel(){
         <div class="att-sum-label">Asistencia</div>
       </div>
     </div>
-
     <div class="att-header">
       <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.04em">Registrar entrenamiento</div>
     </div>
-    <div class="att-add-bar" style="margin-bottom:20px;padding:16px 18px;background:var(--card-bg);border:1px solid var(--border);border-radius:4px;display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
+    <div style="margin-bottom:20px;padding:16px 18px;background:var(--card-bg);border:1px solid var(--border);border-radius:4px;display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
       <div>
         <div class="comment-label" style="margin-top:0">Fecha</div>
         <input type="date" id="newAttDate" class="att-date-input" value="${new Date().toISOString().split('T')[0]}">
@@ -462,7 +635,6 @@ function renderAttPanel(){
       </div>
       <button class="btn-add-att" onclick="addAttRecord()">Añadir</button>
     </div>
-
     <div class="att-log">
       <div class="att-log-header">
         <span>Fecha</span><span>Estado</span><span>Motivo</span><span></span>
@@ -471,10 +643,10 @@ function renderAttPanel(){
   if(list.length===0){
     html+=`<div class="att-empty">Sin registros todavía</div>`;
   } else {
-    [...list].sort((a,b)=>b.date.localeCompare(a.date)).forEach((rec,i)=>{
+    [...list].sort((a,b)=>b.date.localeCompare(a.date)).forEach(rec=>{
+      const realIdx=list.findIndex(r=>r.date===rec.date&&r.state===rec.state&&r.motivo===rec.motivo);
       const badgeClass=rec.state==='present'?'badge-present':rec.state==='absent'?'badge-absent':'badge-injured';
       const stateLabel=rec.state==='present'?'Presente':rec.state==='absent'?'Falta':'Lesión';
-      const realIdx=list.findIndex(r=>r.date===rec.date&&r.state===rec.state&&r.motivo===rec.motivo);
       html+=`
         <div class="att-log-row">
           <span>${rec.date}</span>
@@ -494,31 +666,31 @@ function addAttRecord(){
   const date=document.getElementById('newAttDate').value;
   const state=document.getElementById('newAttState').value;
   const motivo=document.getElementById('newAttMotivo').value.trim();
-  if(!date)return;
+  if(!date) return;
   const list=getAtt(selectedPlayer.id);
   list.push({date,state,motivo});
   saveAtt(selectedPlayer.id,list);
   document.getElementById('newAttMotivo').value='';
-  toast('Registro añadido');
+  toast('Registro añadido ✓');
   renderAttPanel();
 }
 
 function deleteAtt(idx){
-  if(!confirm('¿Eliminar este registro?'))return;
+  if(!confirm('¿Eliminar este registro?')) return;
   const list=getAtt(selectedPlayer.id);
   list.splice(idx,1);
   saveAtt(selectedPlayer.id,list);
   renderAttPanel();
 }
 
-/* ── SKILL HELPERS ── */
+/* ══ SKILL HELPERS ══ */
 function wireSlideres(){
   SECTIONS.forEach(sec=>{
     sec.skills.forEach(sk=>{
       const sid=skId(sec.id,sk);
       const slider=document.getElementById('sl_'+sid);
       const valEl=document.getElementById('vl_'+sid);
-      if(!slider)return;
+      if(!slider) return;
       slider.addEventListener('input',()=>{
         const v=parseFloat(slider.value);
         valEl.textContent=v.toFixed(0);
@@ -549,13 +721,13 @@ function skillRow(secId,skill){
 
 function sectionAvg(sec){
   const vals=sec.skills.map(s=>evalData[sec.id]?.[s]).filter(v=>v!==undefined);
-  if(!vals.length)return 0;
+  if(!vals.length) return 0;
   return vals.reduce((a,b)=>a+parseFloat(b),0)/vals.length;
 }
 
 function colorClass(v){
-  if(!v||v<5)return 'color-red';
-  if(v<7)return 'color-yellow';
+  if(!v||v<5) return 'color-red';
+  if(v<7) return 'color-yellow';
   return 'color-green';
 }
 
@@ -571,14 +743,16 @@ function setAtt(val,btn){
 function markDirty(){
   dirty=true;
   const st=document.getElementById('saveStatus');
-  st.textContent='Sin guardar';st.className='save-status';
+  st.textContent='Sin guardar'; st.className='save-status';
 }
 function toast(msg){
   const t=document.getElementById('toast');
-  t.textContent=msg;t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),2000);
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2400);
 }
 
+// Arranca — rellena el select inmediatamente, luego carga jugadoras
+populateLoginTeams();
 loadPlayers();
 </script>
 </body>
